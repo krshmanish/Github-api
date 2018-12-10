@@ -47,16 +47,16 @@ class GithubElement extends PolymerElement {
       <div class="body-container">
         <template is='dom-if' if="{{cardData.total_count}}">
           <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : [[perPage]], Page No. [[pageNo]]</div>
-        </template>
-          <template is='dom-if' if="{{!cardData}}">
-            <div class="spin-container">
-              <div class="fa fa-spinner fa-spin"></div>
-            </div>
+          <template is="dom-repeat" items="[[cardData.items]]">
+            <card-details card-data="{{item}}"></card-details>
           </template>
-        <template is="dom-repeat" items="[[cardData.items]]">
-          <card-details card-data="{{item}}"></card-details>
+          <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{perPage}}"></github-pagination>
         </template>
-        <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{perPage}}"></github-pagination>
+        <template is='dom-if' if="{{!cardData}}">
+          <div class="spin-container">
+            <div class="fa fa-spinner fa-spin"></div>
+          </div>
+        </template>
       </div>
     `;
   }
