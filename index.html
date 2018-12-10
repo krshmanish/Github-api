@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>Setting Debugger demo</title>
+
+  <script type="module" src="./github-element.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style type="text/css">
+    @font-face {
+        font-family: 'lato';
+        src: url('../fonts/lato-regular-webfont.woff2') format('woff2'),
+            url('../fonts/lato-regular-webfont.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    body {
+      background-color:#000000;
+      overflow:hidden;
+      margin: 0;
+      font-family: lato;
+    }
+
+    #wrapper {
+      background-color:#F1C3F3;
+      position:relative;
+      margin: 0 auto;
+      border:solid 2px #FFFFFF;
+      border-radius:10px;
+      overflow:hidden;
+    }
+  </style>
+
+</head>
+<body onload="document.getElementById('divScrollAll').scrollLeft=400;resizeAll();">
+<h3>Settings Debugger</h3>
+<div id="wrapper">
+  <github-element></github-element>
+</div>
+
+<script type="text/javascript">
+  (function () {
+    if ('registerElement' in document
+      && 'import' in document.createElement('link')
+      && 'content' in document.createElement('template')) {
+      // platform is good!
+    } else {
+      // polyfill the platform!
+      var e = document.createElement('script');
+      e.src = './bower_components/webcomponentsjs/webcomponents-lite.min.js';
+      document.body.appendChild(e);
+    }
+  })();
+</script>
+
+<script type="text/javascript">
+  var resizeAll = function () {
+    var nSize = document.getElementById('divScrollAll').scrollLeft + 100;
+    document.getElementById('wrapper').style.width = (nSize + 50) + 'px';
+    document.getElementById('wrapper').style.height = (nSize - 50) + 'px';
+  };
+  var resizeWidth = function () {
+    var nSize = document.getElementById('divScrollWidth').scrollLeft + 100;
+    document.getElementById('wrapper').style.width = nSize + 'px';
+  };
+  var resizeHeight = function () {
+    var nSize = document.getElementById('divScrollHeight').scrollLeft + 100;
+    document.getElementById('wrapper').style.height = nSize + 'px';
+  };
+</script>
+<div id="divScrollAll"
+     style="position:fixed;right:50px;bottom:100px;overflow:auto;overflow-y:hidden;width:300px;height:17px;"
+     onscroll="resizeAll();">
+  <div style="width:900px;height:17px;"></div>
+</div>
+<div id="divScrollWidth"
+     style="position:fixed;right:50px;bottom:75px;overflow:auto;overflow-y:hidden;width:300px;height:17px;"
+     onscroll="resizeWidth();">
+  <div style="width:900px;height:17px;"></div>
+</div>
+<div id="divScrollHeight"
+     style="position:fixed;right:50px;bottom:50px;overflow:auto;overflow-y:hidden;width:300px;height:17px;"
+     onscroll="resizeHeight();">
+  <div style="width:900px;height:17px;"></div>
+</div>
+</body>
+</html>
