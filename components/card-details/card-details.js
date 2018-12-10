@@ -29,7 +29,8 @@ class CardDetails extends PolymerElement {
         value: "Details"
       },
       cardData: Object,
-      repoData: Array
+      repoData: Array,
+      isDataAvailable: Boolean
     };
   }
 
@@ -41,7 +42,7 @@ class CardDetails extends PolymerElement {
         response => {
           this.repoData = JSON.parse(response);
           this.buttonValue = 'Collapsed';
-          console.log(this.repoData);
+          this.isDataAvailable = this.repoData.length ? true : false;
         },
         error => {
           console.log("helllll : ", error);

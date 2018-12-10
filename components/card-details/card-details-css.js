@@ -105,6 +105,14 @@ $_documentContainer.innerHTML = `<dom-module id="card-details-css">
                 .profile-details__col:first-child {
                     padding-left: 72px;
                 }
+            .not-available {
+                padding: 10px;
+                font-size: 20px;
+                text-align: center;
+                border-top: 1px solid #ccc;
+                padding-bottom: 13px;
+                font-weight: 600;
+            }
         </style>
     </template>
 </dom-module>`;
