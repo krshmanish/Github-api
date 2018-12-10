@@ -41,7 +41,7 @@ class GithubElement extends PolymerElement {
       ></github-header>
       <div class="body-container">
         <template is='dom-if' if="{{cardData.total_count}}">
-          <div class="total-count">Total Results : [[cardData.total_count]]</div>
+          <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : 30, Page No. [[pageNo]]</div>
         </template>
           <template is='dom-if' if="{{!cardData}}">
             <div class="fa fa-spinner fa-spin"></div>
@@ -49,7 +49,7 @@ class GithubElement extends PolymerElement {
         <template is="dom-repeat" items="[[cardData.items]]">
           <card-details card-data="{{item}}"></card-details>
         </template>
-        <github-pagination total-count="{{cardData.total_count}}"></github-pagination>
+        <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}"></github-pagination>
       </div>
     `;
   }
@@ -72,13 +72,14 @@ class GithubElement extends PolymerElement {
         type: Number,
         value: 1,
         notify: true
-      }
+      },
+      filterValue: String
     };
   }
 
   ready() {
     super.ready();
-    this.searchedKey = 'Manishkumar-coditas';
+    this.searchedKey = 'Manishkumar';
     let event = {
       detail: {
         searchedKey: this.searchedKey
@@ -87,19 +88,29 @@ class GithubElement extends PolymerElement {
     this._SearchedKey(event);
   }
 
+  _onPageClick(e) {    
+    this.pageNo = e.detail.pageNo;
+    this.cardData = null;
+    this._getData();
+  }
+
   _OnSelectFilter(e) { 
     this.cardData = null;
-    this._GetData(this.searchedKey + '&' + e.detail.filterValue).then(response => {
-      this.cardData = JSON.parse(response);
-      console.log(this.cardData);
-    }, error => {
-      console.log('Hello : ', error);      
-    });  
+    this.pageNo = 1;
+    this.filterValue = e.detail.filterValue;
+    this._getData();
   }
 
   _SearchedKey(e) {
     this.cardData = null;
-    this._GetData(e.detail.searchedKey).then(response => {
+    this.pageNo = 1;
+    this.searchedKey = e.detail.searchedKey;
+    this._getData();
+  }
+
+  _getData() {
+    this.cardData = null;
+    this._onApiCall(this.searchedKey, this.pageNo, this.filterValue).then(response => {
       this.cardData = JSON.parse(response);
       console.log(this.cardData);
     }, error => {
@@ -107,12 +118,12 @@ class GithubElement extends PolymerElement {
     });
   }
 
-  _GetData(key) {    
+  _onApiCall(searchKey, pageNo, filterValue) {    
     return new Promise((resolve, reject) => {
       var request = new XMLHttpRequest();
       request.open(
         "GET",
-        "https://api.github.com/search/users?page=" + this.pageNo + "&q="+ key);
+        "https://api.github.com/search/users?page=" + pageNo + "&q="+ searchKey + "&" + filterValue);
 
       request.onload = () => {
         if (request.status === 200) {

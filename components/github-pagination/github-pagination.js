@@ -1,4 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/polymer/lib/elements/dom-repeat";
+import "@polymer/polymer/lib/elements/dom-if";
 
 /**
  * `github-pagination`
@@ -12,41 +14,83 @@ class GithubPagination extends PolymerElement {
   static get template() {
     return html`
       <style>
+        :host {
+          display: block;
+          text-align: justify;
+        }
+        .pagination-link {
+          display: inline-block;
+          padding: 0 4px;
+          text-align: center;
+          cursor: pointer;
+        }
+        a:hover {
+          color: #147abc;
+          font-weight: 600;
+        }
+
+        .active-page {
+          color: #147abc;
+          border-bottom: 1px solid;
+          font-weight: 600;
+          font-size: 20px;
+          line-height: 20px;
+        }
       </style>
+      <template is="dom-repeat" items="[[paginationValue]]" as="pageNo" restamp="true">
+        <a
+          class$="pagination-link {{_getActivePage(pageNo,selectedPage)}}"
+          on-click="_gotoPageNo"
+          >[[pageNo]]</a
+        >
+      </template>
     `;
   }
   static get properties() {
     return {
-        totalCount: {
-            type: Number
-        },
-        paginationValue: {
-            type: Array,
-            value: [],
-            computed: '_GeneratePageNo(totalCount)'
-        }
+      totalCount: {
+        type: Number,
+        observer: "_totalCountChanged"
+      },
+      paginationValue: {
+        type: Array,
+        value: []
+      },
+      selectedPage: {
+        type: Number,
+        value: 1,
+        notify: true
+      }
     };
   }
 
-  _GeneratePageNo(totalCount) {
-      this.paginationValue = [];
-      let noOfPages = Math.floor(totalCount/30);
-      console.log('hello : ', noOfPages);
-      
-      for (let i = 1;i<= noOfPages; i++) {
-          this.push('paginationValue', i);
-      }
-      console.log(this.paginationValue);      
+  _getActivePage(pageNo,selectedPage) {
+    return pageNo === selectedPage ? "active-page" : "";
   }
 
-  _OnKeyPressed(e) {
-    if (13 === e.charCode) {
-      this.dispatchEvent(
-        new CustomEvent("enter", {
-          detail: { searchedKey: this.searchKey }
-        })
-      );
+  _totalCountChanged(newValue) {
+    if (newValue) {
+      this.paginationValue = [];
+      this._GeneratePageNo(newValue);
     }
+  }
+
+  _GeneratePageNo(totalCount) {
+    let noOfPages = Math.floor(totalCount / 30);
+    for (let i = 1; i <= noOfPages; i++) {
+      this.push("paginationValue", i);
+    }
+  }
+
+  _gotoPageNo(e) {
+    this.selectedPage = e.model.get("pageNo");
+    console.log(this.selectedPage);
+
+    this.dispatchEvent(
+      new CustomEvent("pageclick", {
+        detail: { pageNo: this.selectedPage }
+      })
+    );
   }
 
   ready() {
