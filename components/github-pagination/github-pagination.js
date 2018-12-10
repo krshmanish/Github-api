@@ -62,7 +62,10 @@ class GithubPagination extends PolymerElement {
         value: 1,
         notify: true
       },
-      perPage: Number
+      perPage: {
+        type:Number,
+        observer: "_changePerPage"
+      }
     };
   }
 
@@ -70,15 +73,21 @@ class GithubPagination extends PolymerElement {
     return pageNo === selectedPage ? "active-page" : "";
   }
 
-  _totalCountChanged(newValue) {
+  _changePerPage(newValue) {
+    this.perPage = newValue;
+    this._GeneratePageNo(this.totalCount);
+  }
+
+  _totalCountChanged(newValue) {    
     if (newValue) {
-      this.paginationValue = [];
       this._GeneratePageNo(newValue);
     }
   }
 
-  _GeneratePageNo(totalCount) {
+  _GeneratePageNo(totalCount) {    
+    this.paginationValue = [];
     let noOfPages = Math.ceil(totalCount / this.perPage);
+
     for (let i = 1; i <= noOfPages; i++) {
       this.push("paginationValue", i);
     }
@@ -86,8 +95,6 @@ class GithubPagination extends PolymerElement {
 
   _gotoPageNo(e) {
     this.selectedPage = e.model.get("pageNo");
-    console.log(this.selectedPage);
-
     this.dispatchEvent(
       new CustomEvent("pageclick", {
         detail: { pageNo: this.selectedPage }

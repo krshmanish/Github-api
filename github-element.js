@@ -38,38 +38,71 @@ class GithubElement extends PolymerElement {
           text-align: center;
           padding: 40px 0px;
         }
+        .err-container {
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          padding: 22px;
+        }
+        .err-msg {
+          color: red;
+          font-size: 22px;
+          padding: 22px;
+        }
+        .primary-btn {
+          background: white;
+          border: 1px solid #147ABC;
+          color: #147ABC;
+          border-radius: 3px;
+          padding: 5px;
+          cursor: pointer;
+          width: 80px;
+      }
+      .input-page-limit {
+        width: 40px;
+      }
       </style>
       <github-header
         search-key="{{searchedKey}}"
         on-filter="_OnSelectFilter"
         on-enter="_SearchedKey"
       ></github-header>
-      <div class="body-container">
-        <template is='dom-if' if="{{cardData.total_count}}">
-          <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : [[perPage]], Page No. [[pageNo]]</div>
-          <template is="dom-repeat" items="[[cardData.items]]">
-            <card-details card-data="{{item}}"></card-details>
+      <template is="dom-if" if="{{isAPIRespond}}">
+        <div class="body-container">
+          <template is='dom-if' if="{{cardData.total_count}}">
+            <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : 
+            <input class="input-page-limit" type="number" value="{{pageLimit::input}}" on-keypress="_OnKeyPressed">
+            , Page No. [[pageNo]]</div>
+            <template is="dom-repeat" items="[[cardData.items]]">
+              <card-details card-data="{{item}}"></card-details>
+            </template>
+            <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{pageLimit}}"></github-pagination>
           </template>
-          <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{perPage}}"></github-pagination>
-        </template>
-        <template is='dom-if' if="{{!cardData}}">
-          <div class="spin-container">
-            <div class="fa fa-spinner fa-spin"></div>
-          </div>
-        </template>
-      </div>
+          <template is='dom-if' if="{{!cardData}}">
+            <div class="spin-container">
+              <div class="fa fa-spinner fa-spin"></div>
+            </div>
+          </template>
+        </div>
+      </template>
+      <template is="dom-if" if="{{!isAPIRespond}}">
+        <div class="err-container">
+          <div class="err-msg">Upprocessable Entity</div>
+          <button on-click="_gotoInitialPage" class="primary-btn">Go TO First Page</button>
+        </div>
+      </template>
     `;
   }
 
   constructor() {
     super();
   }
+
   static get properties() {
     return {
       searchedKey: {
         type: String,
-        value: "",
-        notify: true
+        value: "Manishkumar"
       },
       cardData: {
         type: Object,
@@ -80,40 +113,49 @@ class GithubElement extends PolymerElement {
         value: 1,
         notify: true
       },
-      filterValue: String,
-      perPage: {
+      filterValue: {
+        type: String,
+        value: "sort=stars&order=asc"
+      },
+      pageLimit: {
         type: Number,
         value: 10
+      },
+      isAPIRespond: {
+        type: Boolean, 
+        value: true
       }
     };
   }
 
   ready() {
     super.ready();
-    this.searchedKey = 'Manishkumar';
-    let event = {
-      detail: {
-        searchedKey: this.searchedKey
-      }
-    };
-    this._SearchedKey(event);
+    this._getData();
+  }
+
+  _OnKeyPressed(e) {
+    if (13 === e.charCode) {
+      this._gotoInitialPage();
+    }
+  }
+
+  _gotoInitialPage() {
+    this.pageNo = 1;
+    this._getData();
   }
 
   _onPageClick(e) {    
     this.pageNo = e.detail.pageNo;
-    this.cardData = null;
     this._getData();
   }
 
   _OnSelectFilter(e) { 
-    this.cardData = null;
     this.pageNo = 1;
     this.filterValue = e.detail.filterValue;
     this._getData();
   }
 
   _SearchedKey(e) {
-    this.cardData = null;
     this.pageNo = 1;
     this.searchedKey = e.detail.searchedKey;
     this._getData();
@@ -123,9 +165,9 @@ class GithubElement extends PolymerElement {
     this.cardData = null;
     this._onApiCall(this.searchedKey, this.pageNo, this.filterValue).then(response => {
       this.cardData = JSON.parse(response);
-      console.log(this.cardData);
+      this.isAPIRespond = true;
     }, error => {
-      console.log('Hello : ', error);      
+      this.isAPIRespond = false;    
     });
   }
 
@@ -134,7 +176,7 @@ class GithubElement extends PolymerElement {
       var request = new XMLHttpRequest();
       request.open(
         "GET",
-        "https://api.github.com/search/users?page=" + pageNo + "&per_page=" + this.perPage + "&q="+ searchKey + "&" + filterValue);
+        "https://api.github.com/search/users?page=" + pageNo + "&per_page=" + this.pageLimit + "&q="+ searchKey + "&" + filterValue);
 
       request.onload = () => {
         if (request.status === 200) {

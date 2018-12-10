@@ -1,5 +1,5 @@
 {
-  "template": "<github-element></github-element>",
+  "template": "<github-element [Page_Per_Limit]=\"Settings.perpage\"></github-element>",
   "bowerName": "",
   "technology": {
     "framework": "polymer",
@@ -15,7 +15,13 @@
     "title": "Github API",
     "type": "object",
     "required": [],
-    "properties": {}
+    "properties": {
+        "perpage": {
+          "title": "Page Limit",
+          "description": "Page Limit Per Page.",
+          "type": "number"
+        }
+    }
   },
   "instanceDefaultSettings": {},
   "metadataTypes": []
