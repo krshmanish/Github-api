@@ -37,6 +37,7 @@ class GithubPagination extends PolymerElement {
           line-height: 20px;
         }
       </style>
+      Page No : 
       <template is="dom-repeat" items="[[paginationValue]]" as="pageNo" restamp="true">
         <a
           class$="pagination-link {{_getActivePage(pageNo,selectedPage)}}"
@@ -60,7 +61,8 @@ class GithubPagination extends PolymerElement {
         type: Number,
         value: 1,
         notify: true
-      }
+      },
+      perPage: Number
     };
   }
 
@@ -76,7 +78,7 @@ class GithubPagination extends PolymerElement {
   }
 
   _GeneratePageNo(totalCount) {
-    let noOfPages = Math.floor(totalCount / 30);
+    let noOfPages = Math.ceil(totalCount / this.perPage);
     for (let i = 1; i <= noOfPages; i++) {
       this.push("paginationValue", i);
     }

@@ -33,6 +33,11 @@ class GithubElement extends PolymerElement {
           padding: 10px 0px;
           font-size: 14px;
         }
+        .spin-container {
+          font-size: 70px;
+          text-align: center;
+          padding: 40px 0px;
+        }
       </style>
       <github-header
         search-key="{{searchedKey}}"
@@ -41,15 +46,17 @@ class GithubElement extends PolymerElement {
       ></github-header>
       <div class="body-container">
         <template is='dom-if' if="{{cardData.total_count}}">
-          <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : 30, Page No. [[pageNo]]</div>
+          <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : [[perPage]], Page No. [[pageNo]]</div>
         </template>
           <template is='dom-if' if="{{!cardData}}">
-            <div class="fa fa-spinner fa-spin"></div>
+            <div class="spin-container">
+              <div class="fa fa-spinner fa-spin"></div>
+            </div>
           </template>
         <template is="dom-repeat" items="[[cardData.items]]">
           <card-details card-data="{{item}}"></card-details>
         </template>
-        <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}"></github-pagination>
+        <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{perPage}}"></github-pagination>
       </div>
     `;
   }
@@ -73,7 +80,11 @@ class GithubElement extends PolymerElement {
         value: 1,
         notify: true
       },
-      filterValue: String
+      filterValue: String,
+      perPage: {
+        type: Number,
+        value: 10
+      }
     };
   }
 
@@ -123,7 +134,7 @@ class GithubElement extends PolymerElement {
       var request = new XMLHttpRequest();
       request.open(
         "GET",
-        "https://api.github.com/search/users?page=" + pageNo + "&q="+ searchKey + "&" + filterValue);
+        "https://api.github.com/search/users?page=" + pageNo + "&per_page=" + this.perPage + "&q="+ searchKey + "&" + filterValue);
 
       request.onload = () => {
         if (request.status === 200) {
