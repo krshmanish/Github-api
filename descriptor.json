@@ -1,5 +1,5 @@
 {
-  "template": "<github-element [Page_Per_Limit]=\"Settings.perpage\"></github-element>",
+  "template": "<github-element [pagelimit]=\"Settings.perpage\" [widgetid]=\"Settings.WidgetId\" [dashboardid]=\"Settings.dashboardId\"></github-element>",
   "bowerName": "",
   "technology": {
     "framework": "polymer",
@@ -19,10 +19,10 @@
         "perpage": {
           "title": "Page Limit",
           "description": "Page Limit Per Page.",
-          "type": "number"
+          "type": "integer"
         }
     }
   },
-  "instanceDefaultSettings": {},
+  "instanceDefaultSettings": {"perpage": 10},
   "metadataTypes": []
 }

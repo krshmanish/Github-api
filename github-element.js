@@ -71,12 +71,12 @@ class GithubElement extends PolymerElement {
         <div class="body-container">
           <template is='dom-if' if="{{cardData.total_count}}">
             <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : 
-            <input class="input-page-limit" type="number" value="{{pageLimit::input}}" on-keypress="_OnKeyPressed">
+            <input class="input-page-limit" type="number" value="{{pagelimit::input}}" on-keypress="_OnKeyPressed">
             , Page No. [[pageNo]]</div>
             <template is="dom-repeat" items="[[cardData.items]]">
               <card-details card-data="{{item}}"></card-details>
             </template>
-            <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{pageLimit}}"></github-pagination>
+            <github-pagination total-count="{{cardData.total_count}}" on-pageclick="_onPageClick" selected-page="{{pageNo}}" per-page="{{pagelimit}}"></github-pagination>
           </template>
           <template is='dom-if' if="{{!cardData}}">
             <div class="spin-container">
@@ -117,20 +117,43 @@ class GithubElement extends PolymerElement {
         type: String,
         value: "sort=stars&order=asc"
       },
-      pageLimit: {
+      pagelimit: {
         type: Number,
-        value: 10
+        value: 10,
+        observer: "_updatePageLimit"
       },
       isAPIRespond: {
         type: Boolean, 
         value: true
-      }
+      },
+      widgetid: String,
+      dashboardid: String
     };
   }
 
   ready() {
     super.ready();
     this._getData();
+  }
+
+  _updatePageLimit(newValue) {
+    if(newValue) {
+       this.dispatchEvent(new CustomEvent('WorkspaceWidgetEvent', {
+        bubbles: true,
+        composed: true,
+        detail : {
+          eventType: 'UpdateSettingsEvent',
+          data: {
+              dashboardId: this.dashboardid,
+              widgetId: this.widgetid,
+              settings: [ 
+                { accessor: 'perpage', value: parseInt(this.pagelimit) }
+              ]
+          }
+        }
+       }));
+       this._getData();
+    }
   }
 
   _OnKeyPressed(e) {
@@ -176,7 +199,7 @@ class GithubElement extends PolymerElement {
       var request = new XMLHttpRequest();
       request.open(
         "GET",
-        "https://api.github.com/search/users?page=" + pageNo + "&per_page=" + this.pageLimit + "&q="+ searchKey + "&" + filterValue);
+        "https://api.github.com/search/users?page=" + pageNo + "&per_page=" + this.pagelimit + "&q="+ searchKey + "&" + filterValue);
 
       request.onload = () => {
         if (request.status === 200) {

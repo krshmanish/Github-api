@@ -6,7 +6,7 @@ $_documentContainer.innerHTML = `<dom-module id="card-details-css">
 			:host {
                 font-family: lato;
                 display: block;
-                min-height: 100px;
+                min-height: 80px;
                 width: 100%;
                 background: white;
                 box-shadow: 0px 0px 11px 0px #888888;
