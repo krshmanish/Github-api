@@ -1,4 +1,6 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
 import TEMPLATE from "./github-header-template";
 import "./github-header-css";
 
@@ -32,13 +34,17 @@ class GithubHeader extends PolymerElement {
   }
 
   _OnKeyPressed(e) {
-    if (13 === e.charCode) {
-      this.dispatchEvent(
-        new CustomEvent("enter", {
-          detail: { searchedKey: this.searchKey }
-        })
-      );
-    }
+    this._debounceJob = Debouncer.debounce(
+      this._debounceJob,
+      timeOut.after(500),
+      () => {
+        this.dispatchEvent(
+          new CustomEvent("enter", {
+            detail: { searchedKey: this.searchKey }
+          })
+        );
+      }
+    );
   }
 
   _OnSelectFilter(event) {
@@ -60,6 +66,15 @@ class GithubHeader extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._debounceJob && this._debounceJob.isActive()) {
+      console.log("disconnected......");
+
+      this._debounceJob.cancel();
+    }
   }
 }
 

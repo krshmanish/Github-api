@@ -11,6 +11,6 @@ export default `
                 </select>
             </div>
             <div class="container__part">
-                <input type="text" class="input-box fa fa-search" value="{{searchKey::input}}" on-keypress="_OnKeyPressed">
+                <input type="text" class="input-box fa fa-search" value="{{searchKey::input}}" on-keydown="_OnKeyPressed">
             </div>
         </div>`;

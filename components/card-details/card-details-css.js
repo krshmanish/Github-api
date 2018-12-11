@@ -75,7 +75,7 @@ $_documentContainer.innerHTML = `<dom-module id="card-details-css">
             .profile-details {
                 width: 100%;
                 max-height: 200px;
-                overflow-y: scroll;
+                overflow-y: auto;
             }
 
                 .profile-details__row {

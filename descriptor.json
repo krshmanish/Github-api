@@ -1,5 +1,5 @@
 {
-  "template": "<github-element [pagelimit]=\"Settings.perpage\" [widgetid]=\"Settings.WidgetId\" [dashboardid]=\"Settings.dashboardId\"></github-element>",
+  "template": "<github-element [pagelimit]=\"Settings.perpage\" [pageno]=\"Settings.pageno\" [widgetid]=\"Settings.WidgetId\" [dashboardid]=\"Settings.dashboardId\"></github-element>",
   "bowerName": "",
   "technology": {
     "framework": "polymer",
@@ -20,9 +20,14 @@
           "title": "Page Limit",
           "description": "Page Limit Per Page.",
           "type": "integer"
+        },
+        "pageno": {
+          "title": "Page No.",
+          "description": "Page No.(By default Page No. 1 selected.)",
+          "type": "integer"
         }
     }
   },
-  "instanceDefaultSettings": {"perpage": 10},
+  "instanceDefaultSettings": {"perpage": 10, "pageno": 1},
   "metadataTypes": []
 }
