@@ -24,7 +24,7 @@ export default `
                     <template is="dom-repeat" items="[[repoData]]">
                         <div class="profile-details__row">
                             <a class="profile-details__col" href="{{item.html_url}}" target='new'>[[item.name]]</a>
-                            <div class="profile-details__col">[[item.language]]</div>
+                            <div class="profile-details__col">[[_getLanguage(item.language)]]</div>
                         </div>
                     </template>
                 </div>

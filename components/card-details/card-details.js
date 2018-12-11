@@ -73,6 +73,9 @@ class CardDetails extends PolymerElement {
       request.send();
     });
   }
+  _getLanguage(language) {
+    return language ? language : "NA";
+  }
 }
 
 window.customElements.define("card-details", CardDetails);
