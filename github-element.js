@@ -1,9 +1,13 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import '@polymer/polymer/lib/elements/dom-repeat';
+
+
 import "./components/widget-header/github-header.js";
 import "./components/card-details/card-details.js";
 import "./components/github-pagination/github-pagination.js";
 
-import '@polymer/polymer/lib/elements/dom-repeat';
 
 /**
  * `github-element`
@@ -71,7 +75,7 @@ class GithubElement extends PolymerElement {
         <div class="body-container">
           <template is='dom-if' if="{{cardData.total_count}}">
             <div class="total-count">Total Results : [[cardData.total_count]], Page Limit : 
-            <input class="input-page-limit" type="number" value="{{pagelimit::input}}" on-keypress="_OnKeyPressed">
+            <input class="input-page-limit" type="number" value="{{pagelimit::input}}" on-keydown="_OnKeyPressed">
             , Page No. [[pageno]]</div>
             <template is="dom-repeat" items="[[cardData.items]]">
               <card-details card-data="{{item}}"></card-details>
@@ -159,7 +163,12 @@ class GithubElement extends PolymerElement {
           }
         }
        }));
-       this._getData();
+
+       this._debounceJob = Debouncer.debounce(
+         this._debounceJob,timeOut.after(500),() => {
+           this._getData();
+         }
+       );
     }
   }
 
@@ -217,6 +226,13 @@ class GithubElement extends PolymerElement {
       };
       request.send();
     });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if(this._debounceJob && this._debounceJob.isActive()) {
+      this._debounceJob.cancel();
+    }
   }
 }
 
