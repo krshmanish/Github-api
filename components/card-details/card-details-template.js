@@ -6,7 +6,9 @@ export default `
             </div>
             <div class="profile-card__desc">
                 <div class="profile-card__desc__header">[[cardData.login]]</div>
-                <div class="profile-card__desc__profile-url">Profile URL : [[cardData.html_url]]</div>
+                <div class="profile-card__desc__profile-url">Profile URL : 
+                    <a href="{{cardData.html_url}}" target="new">[[cardData.html_url]]</a>
+                </div>
             </div>
             <div class="profile-card__btn">
                 <button class="primary-btn" on-click="_onDetailsClick">[[buttonValue]]</button>
